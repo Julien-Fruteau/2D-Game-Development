@@ -12,6 +12,10 @@ public class Enemy : MonoBehaviour
     private bool _isBeingDestroyed = false;
     private BoxCollider2D _collider;
     private AudioManager _audioManager;
+    [SerializeField] GameObject _laser;
+    [SerializeField] private Vector3 _spawnLaserOffset = new Vector3(0f, -1.75f, 0f);
+    [SerializeField] private AudioClip _laserShotAudioClip;
+    private AudioSource _laserShotAudioSrc;
     // Start is called before the first frame update
     void Start()
     {
@@ -37,6 +41,16 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Unable to find game object audio manager");
         }
+        if (_laserShotAudioClip == null)
+        {
+            Debug.LogError("Please assign Laser Audio Clip on the Enemy in the corresponding field in Unity Editor");
+        }
+        else
+        {
+            _laserShotAudioSrc = GetComponent<AudioSource>();
+            _laserShotAudioSrc.clip = _laserShotAudioClip;
+        }
+        StartCoroutine(FireCoroutine());
     }
 
     // Update is called once per frame
@@ -46,8 +60,23 @@ public class Enemy : MonoBehaviour
     
         if (!_isBeingDestroyed && transform.position.y < SpawnObjConst.yMin)
         {
-            transform.position = new Vector3(Random.Range(SpawnObjConst.xMin, SpawnObjConst.xMax), SpawnObjConst.ySpawn, 0);
+            transform.position = new Vector3(Random.Range(SpawnObjConst.xMin, SpawnObjConst.xMax), SpawnObjConst.yMax, 0);
         }    
+    }
+
+    private void Fire()
+    {
+        Instantiate(_laser, transform.position + _spawnLaserOffset, Quaternion.identity);
+        _laserShotAudioSrc.Play();
+    }
+
+    private IEnumerator FireCoroutine()
+    {
+        while (true)
+        {
+            yield  return new WaitForSeconds(UnityEngine.Random.Range(.5f, 5f));
+            Fire();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -55,12 +84,12 @@ public class Enemy : MonoBehaviour
         switch (other.tag)
         {
             case "Player":
-                if (_player != null)
-                    _player.Damage();
+                // if (_player != null)
+                //     _player.Damage();
                 DestroyEnemy();
                 break;
             case "Laser":
-                Destroy(other.gameObject, 2.8f);
+                // Destroy(other.gameObject);
                 if (_player != null)
                     _player.AddScore(10);
                 DestroyEnemy();

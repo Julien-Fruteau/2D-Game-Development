@@ -75,7 +75,7 @@ public class SpawnManager : MonoBehaviour
 
     private Vector3 GetSpawnObjectLocation()
     {
-        return new Vector3(UnityEngine.Random.Range(SpawnObjConst.xMin, SpawnObjConst.xMax), SpawnObjConst.ySpawn, 0);
+        return new Vector3(UnityEngine.Random.Range(SpawnObjConst.xMin, SpawnObjConst.xMax), SpawnObjConst.yMax, 0);
     }
 
     public void OnPlayerDeath()

@@ -34,6 +34,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject[] _fires = new GameObject[2];
     [SerializeField] private AudioClip _laserShotAudioClip;
     private AudioSource _laserShotAudioSrc;
+    [SerializeField] GameObject _explosionPrefab;
     // public event OnPlayerScoreDelegate OnPlayerScore;
     // public event OnPlayerDeathDelegate OnDeathEvent;
 
@@ -92,6 +93,10 @@ public class Player : MonoBehaviour
             _laserShotAudioSrc = GetComponent<AudioSource>();
             _laserShotAudioSrc.clip = _laserShotAudioClip;
         }
+        if (_explosionPrefab == null)
+        {
+            Debug.LogError("Explostion Prefab has not be assigned via Unity Editor");
+        }
     }
 
     // Update is called once per frame
@@ -146,6 +151,7 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
+        Debug.Log("Damage is called");
         if (_shieldVisualizer.activeSelf)
         {
             _shieldVisualizer.SetActive(false);
@@ -171,10 +177,13 @@ public class Player : MonoBehaviour
                 break;
         }
 
+        // if (_lives >= 0)
         _uiManager.UpdateLives(_lives);
+
         if (_lives <= 0)
         {
             _spawnManager.OnPlayerDeath();
+            GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
         }
     }
@@ -255,6 +264,16 @@ public class Player : MonoBehaviour
         if (_inputAction != null)
         {
             _inputAction.Disable();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        switch(other.tag)
+        {
+            case "Enemy":
+                Damage();
+                break;
         }
     }
 }

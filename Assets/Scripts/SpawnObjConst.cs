@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class SpawnObjConst
 {
-    public const float ySpawn = 7f;
+    public const float yMax = 7f;
 
     public const float yMin = -6f;
 
