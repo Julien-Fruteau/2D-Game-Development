@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        
+        _inputAction.Player.QuitGame.performed += context => Application.Quit();
     }
 
     // Update is called once per frame
